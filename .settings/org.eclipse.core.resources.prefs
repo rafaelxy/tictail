@@ -1,6 +1,0 @@
-eclipse.preferences.version=1
-encoding//server/api.py=utf-8
-encoding//server/app.py=utf-8
-encoding//tests/conftest.py=utf-8
-encoding//tests/test_example.py=utf-8
-encoding/runserver.py=utf-8
