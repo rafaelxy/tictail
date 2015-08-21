@@ -157,7 +157,22 @@
     this.prefs = prefs;
 
     this.search = function(cb) {
-      // TODO: Implement this.
+        
+        
+        //Not sure why $.param() dont work directly with prefs
+        var prefs_proxy = {
+            count: prefs.count,
+            radius: prefs.radius,
+            lat: prefs.position.lat,
+            lng: prefs.position.lng,
+            tags: prefs.tags,
+        };
+        
+        //cb = function(err, products)
+        $.get('http://0.0.0.0:5000/search?'+$.param(prefs_proxy), function(data) {
+          // TODO: Implement this.
+        });
+        
     };
   };
 
