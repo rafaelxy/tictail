@@ -7,6 +7,7 @@ Created on Aug 20, 2015
 '''
 from __future__ import unicode_literals
 import csv
+import unicodecsv 
 
 class CsvRow:
     ID = 0
@@ -29,11 +30,10 @@ class Tagging(CsvRow):
     SHOP_ID=1
     TAG_ID=2
     
-
 data_path = 'data/'
 def from_csv(name, cbfilter=None, args=None):
     with open(data_path+name+'.csv', 'r') as f:
-        reader = csv.reader(f)
+        reader = unicodecsv.reader(f)
         
         """Condition (row[0] == 'id') assumes all csvs will have a label row with the first cell as 'id'"""
         if cbfilter:
