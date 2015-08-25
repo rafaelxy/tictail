@@ -6,8 +6,8 @@ Created on Aug 20, 2015
 @author: rcampos
 '''
 from __future__ import unicode_literals
-import csv
-import unicodecsv 
+from server.haversine import haversine_in_meters
+import unicodecsv
 
 class CsvRow:
     ID = 0
@@ -29,6 +29,48 @@ class Tag(CsvRow):
 class Tagging(CsvRow):
     SHOP_ID=1
     TAG_ID=2
+    
+    
+
+def shop_in_radius_with_taggings(row, args):
+    taggings = args['taggings']
+    shoptaggings_ids = [tagging['shop_id'] for tagging in taggings]
+     
+    args = args['geo_args']
+    dist = haversine_in_meters(
+        float(args['lng']),
+        float(args['lat']),
+        float(row[Shop.LNG]),
+        float(row[Shop.LAT]))
+    
+    if dist < float(args['radius']) and row[Shop.ID] in shoptaggings_ids:
+        return True
+    else:
+        return False
+
+def products_in_shops(row, shops):
+    shops_ids = [shop['id'] for shop in shops] 
+    
+    if row[Product.SHOP_ID] in shops_ids:
+        return True
+    else:
+        return False
+
+def tag_exists(row, tags):
+    tags = tags.split(',')
+    
+    if row[Tag.TAG] in tags:
+        return True
+    else:
+        return False
+
+def taggings_exists(row, tags):
+    tags_id = [tag['id'] for tag in tags] 
+    
+    if row[Tagging.TAG_ID] in tags_id:
+        return True
+    else:
+        return False
     
 data_path = 'data/'
 def from_csv(name, cbfilter=None, args=None):

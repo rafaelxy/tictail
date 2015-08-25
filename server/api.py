@@ -1,39 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app, request
 from flask.wrappers import Response
-from server.haversine import haversine_in_meters
-from server.models import from_csv, Shop, Product
+from server.models import from_csv, tag_exists, taggings_exists, \
+    shop_in_radius_with_taggings, products_in_shops
 import json
-import math
 
 api = Blueprint('api', __name__)
 
 def data_path(filename):
     data_path = current_app.config['DATA_PATH']
     return u"%s/%s" % (data_path, filename)
-
-def shop_in_radius(row, args):
-    dist = haversine_in_meters(
-        float(args['lng']),
-        float(args['lat']),
-        float(row[Shop.LNG]),
-        float(row[Shop.LAT]))
-    
-    if dist < float(args['radius']):
-        return True
-    else:
-        return False
-
-
-def products_in_shops(row, shops):
-    shops_ids = [shop['id'] for shop in shops] 
-    
-    if row[Product.SHOP_ID] in shops_ids:
-        return True
-    else:
-        return False
     
 @api.route('/search', methods=['GET'])
 def search():
@@ -47,7 +25,12 @@ def search():
     lng: global longitude
     tags: tags separated by comma
     """
-    shops = from_csv('shops', shop_in_radius, request.args)
+    
+    tags = from_csv('tags', tag_exists, request.args['tags'])
+    
+    taggings = from_csv('taggings', taggings_exists, tags)
+    
+    shops = from_csv('shops', shop_in_radius_with_taggings, { "geo_args": request.args, "taggings": taggings })
     products = from_csv('products', products_in_shops, shops)
  
     """sorts by popularity"""
@@ -55,12 +38,6 @@ def search():
      
     """limits the results"""
     products = products[:int(request.args['count'])]
-    
-    #TODO tags filtering
-    
-#clear debbugging json (not unicode but pretty)
-#     response = jsonify({ 'products': products })
-#     response.headers.add('Content-Type', 'application/json; charset=utf-8')
     
     response = json.dumps({ 'products': products }, ensure_ascii=False)
     response = Response(response=response)
