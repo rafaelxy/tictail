@@ -61,8 +61,11 @@ def shop_in_radius(row, args):
 
 def products_in_shops(row, shops):
     shops_ids = [shop['id'] for shop in shops] 
+    shopsdict = {shop['id']:shop for shop in shops} 
     
     if row[Product.SHOP_ID] in shops_ids:
+        """replace ID with OBJ"""
+        row[Product.SHOP_ID] = shopsdict[row[Product.SHOP_ID]]
         return True
     else:
         return False
@@ -82,6 +85,11 @@ def taggings_exists(row, tags):
         return True
     else:
         return False
+    
+def transform_id_to_object_key(obj, key):
+    obj[key] = obj.pop(key+'_id')
+    return obj
+    
     
 data_path = 'data/'
 def from_csv(name, cbfilter=None, args=None):

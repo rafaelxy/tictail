@@ -168,10 +168,10 @@
             tags: prefs.tags.join(','),
         };
         
-        
-        //cb = function(err, products)
         $.get('http://0.0.0.0:5000/search?'+$.param(prefs_proxy), function(data) {
-          // TODO: Implement this.
+            cb(null, data.products);
+        }).fail(function() {
+            cb("Error retrieving data", {});
         });
         
     };

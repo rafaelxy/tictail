@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 from flask import Blueprint, current_app, request
 from flask.wrappers import Response
 from server.models import from_csv, tag_exists, taggings_exists, \
-    shop_in_radius_with_taggings, products_in_shops, shop_in_radius
+    shop_in_radius_with_taggings, products_in_shops, shop_in_radius, \
+    transform_id_to_object_key
 import json
 
 api = Blueprint('api', __name__)
@@ -43,6 +44,9 @@ def search():
      
     """limits the results"""
     products = products[:int(request.args['count'])]
+    
+    """didn't predict that the client was using shop's information"""
+    products = [transform_id_to_object_key(p, 'shop') for p in products]
     
     response = json.dumps({ 'products': products }, ensure_ascii=False)
     response = Response(response=response)
