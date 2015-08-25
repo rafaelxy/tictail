@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from flask import Blueprint, current_app, request
 from flask.wrappers import Response
 from server.models import from_csv, tag_exists, taggings_exists, \
-    shop_in_radius_with_taggings, products_in_shops
+    shop_in_radius_with_taggings, products_in_shops, shop_in_radius
 import json
 
 api = Blueprint('api', __name__)
@@ -26,11 +26,16 @@ def search():
     tags: tags separated by comma
     """
     
-    tags = from_csv('tags', tag_exists, request.args['tags'])
+    if 'tags' in request.args and request.args['tags']:
+        tags = from_csv('tags', tag_exists, request.args['tags'])
+        
+        taggings = from_csv('taggings', taggings_exists, tags)
+        
+        shops = from_csv('shops', shop_in_radius_with_taggings, 
+                         { "geo_args": request.args, "taggings": taggings })
+    else:
+        shops = from_csv('shops', shop_in_radius, request.args)
     
-    taggings = from_csv('taggings', taggings_exists, tags)
-    
-    shops = from_csv('shops', shop_in_radius_with_taggings, { "geo_args": request.args, "taggings": taggings })
     products = from_csv('products', products_in_shops, shops)
  
     """sorts by popularity"""

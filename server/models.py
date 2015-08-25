@@ -30,7 +30,6 @@ class Tagging(CsvRow):
     SHOP_ID=1
     TAG_ID=2
     
-    
 
 def shop_in_radius_with_taggings(row, args):
     taggings = args['taggings']
@@ -44,6 +43,18 @@ def shop_in_radius_with_taggings(row, args):
         float(row[Shop.LAT]))
     
     if dist < float(args['radius']) and row[Shop.ID] in shoptaggings_ids:
+        return True
+    else:
+        return False
+
+def shop_in_radius(row, args):
+    dist = haversine_in_meters(
+        float(args['lng']),
+        float(args['lat']),
+        float(row[Shop.LNG]),
+        float(row[Shop.LAT]))
+    
+    if dist < float(args['radius']):
         return True
     else:
         return False
