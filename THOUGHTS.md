@@ -7,3 +7,5 @@
 - Tried to make CSV access similar to a callback-filtering API that could be reused.
 
 - Radius vs distance using Haversine formula - Loved working with a little bit of GIS again :)
+
+- Sorry about not writing any tests; Had a clutch time/week to implement this.
