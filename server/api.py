@@ -41,7 +41,7 @@ def search():
  
     """sorts by popularity"""
     products = sorted(products, key=lambda k: k['popularity'], reverse=True)
-     
+    
     """limits the results"""
     products = products[:int(request.args['count'])]
     
@@ -51,9 +51,8 @@ def search():
     response = json.dumps({ 'products': products }, ensure_ascii=False)
     response = Response(response=response)
     
-    response.headers['Content-Type'] = 'application/json; charset=utf-8'
-    response.headers['mimetype'] = 'application/json'
-
     """Allow access from any other host for now - later we discuss security for this"""
     response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    response.headers['mimetype'] = 'application/json'
     return response
