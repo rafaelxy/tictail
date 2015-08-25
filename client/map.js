@@ -165,8 +165,9 @@
             radius: prefs.radius,
             lat: prefs.position.lat,
             lng: prefs.position.lng,
-            tags: prefs.tags,
+            tags: prefs.tags.join(','),
         };
+        
         
         //cb = function(err, products)
         $.get('http://0.0.0.0:5000/search?'+$.param(prefs_proxy), function(data) {
